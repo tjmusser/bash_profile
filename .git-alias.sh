@@ -6,8 +6,8 @@ git config --global alias.co checkout
 git config --global alias.ci '!git commit --verbose'
 git config --global alias.st status
 git config --global alias.br branch
-git config --global alias.hist 'log --format=format:'%C(bold yellow)%h%C(reset) %C(blue)(%ar)%C(reset) -  %C(white)%s%C(reset) %C(dim white)[%an]%
-C(reset)%C(dim yellow)%d%C(reset)' --graph --decorate
+git config --global alias.hist "log --format=format:'%C(bold yellow)%h%C(reset) %C(blue)(%ar)%C(reset) - %C(white)%s%C(reset) %C(dim white)[%an]%
+C(reset)%C(dim yellow)%d%C(reset)' --graph --decorate"
 git config --global alias.type 'cat-file -t'
 git config --global alias.dump 'cat-file -p'
 git config --global alias.last 'log -1 HEAD'
