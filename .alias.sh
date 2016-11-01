@@ -10,6 +10,7 @@ alias gc='git ci'
 alias gd='git diff'
 alias go='git co'
 alias gri='git rebase -i'
+alias gcleanbr='git br --merged | egrep -v "(^\*|master|develop)" | xargs git br -d'
 
 ## Git misspellings
 alias got='git'
