@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 #
 # Aliases to use within git
 
