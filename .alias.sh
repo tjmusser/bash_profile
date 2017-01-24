@@ -33,8 +33,8 @@ alias cd..='cd ..'
 
 ## a quick way to get out of current directory ##
 alias ..='cd ..'
-alias ...='cd ../../..'
-alias ....='cd ../../../..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
 alias .....='cd ../../../..'
 alias .2='cd ../..'
 alias .3='cd ../../..'
