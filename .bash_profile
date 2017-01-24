@@ -21,3 +21,6 @@ if [ -f ~/.bash-settings.sh ]; then
   . ~/.bash-settings.sh
 fi
 
+if [ -f ~/.git-templates.sh ]; then
+  sh ~/.git-templates.sh
+fi
