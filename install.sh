@@ -9,7 +9,6 @@ cp .git-alias.sh ~/
 cp .git-completion.bash ~/
 cp .git-config-setup.sh ~/
 cp .git-prompt.sh ~/
-cp .git-templates.sh ~/
 
 # Create template hooks directory if missing
 if [ ! -d ~/.git-templates/hooks ]; then
