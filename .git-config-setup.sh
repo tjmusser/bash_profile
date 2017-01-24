@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 #
 
 # File to be run once to set up some nice standard git global setting
