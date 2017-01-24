@@ -10,7 +10,7 @@ if [ ! -d ~/.git-templates/hooks ]; then
 fi
 
 # Copy all hooks from repo to system template
-./git-templates/hooks/* ~/.git-templates/hooks
+cp ./git-templates/hooks/* ~/.git-templates/hooks
 
 # Make hooks executable
 chmod a+x ~/.git-templates/hooks/pre-commit
