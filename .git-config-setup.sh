@@ -24,3 +24,6 @@ git config --global rerere.enabled true
 
 # Auto update/stage rerere on merge fixes (works on rebase too)
 git config --global rerere.autoupdate true
+
+# Set git to globally use templates directory
+git config --global init.templatedir '~/.git-templates'
