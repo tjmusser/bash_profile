@@ -15,6 +15,7 @@ alias gcleanbr='git br --merged | egrep -v "(^\*|master|develop)" | xargs git br
 ## Git misspellings
 alias got='git'
 alias get='git'
+alias gti='git'
 
 ## Git push to master
 alias gpm='git push origin master'
@@ -23,7 +24,9 @@ alias gpm='git push origin master'
 alias gf='git fetch -p origin'
 alias gpr='git pull --rebase'
 alias gffm='git merge --ff-only'
-alias gsync='git co master && gf && gffm origin/master'
+alias syncmaster='git co master && gf && gffm origin/master'
+alias syncdev='git co develop && gf && gffm origin/develop'
+alias syncall='syncmaster && syncdev'
 
 ## get rid of command not found ##
 alias cd..='cd ..'
