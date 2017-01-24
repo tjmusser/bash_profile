@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# Check to see if we are on master branch. Stop accidental commits
+if [ $(git symbolic-ref HEAD 2>/dev/null) == "refs/heads/master" ]
+then
+  echo "Cannot commit to master branch"
+  exit 1
+fi
+exit 0
+
+
+# Redirect output to stderr.
+exec 1>&2
+# enable user input
+exec < /dev/tty
+
+# Check for console.log statements
+
+consoleregexp='console.log'
+# CHECK
+if test $(git diff --cached | grep $consoleregexp | wc -l) != 0
+then
+  exec git diff --cached | grep -ne $consoleregexp
+  read -p "There are some occurrences of console.log at your modification. Are you sure want to continue? (y/n)" yn
+  echo $yn | grep ^[Yy]$
+  if [ $? -eq 0 ]
+  then
+    exit 0; #THE USER WANTS TO CONTINUE
+  else
+    exit 1; # THE USER DONT WANT TO CONTINUE SO ROLLBACK
+  fi
+fi
+
+
+# Check for debugger statements
+
+consoleregexp='debugger'
+# CHECK
+if test $(git diff --cached | grep $consoleregexp | wc -l) != 0
+then
+  exec git diff --cached | grep -ne $consoleregexp
+  read -p "There are some occurrences of console.log at your modification. Are you sure want to continue? (y/n)" yn
+  echo $yn | grep ^[Yy]$
+  if [ $? -eq 0 ]
+  then
+    exit 0; #THE USER WANTS TO CONTINUE
+  else
+    exit 1; # THE USER DONT WANT TO CONTINUE SO ROLLBACK
+  fi
+fi
