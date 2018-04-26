@@ -4,6 +4,8 @@
 # Conceptually based on gitcompletion (http://gitweb.hawaga.org.uk/).
 # Distributed under the GNU General Public License, version 2.0.
 #
+# https://github.com/git/git/blob/master/contrib/completion/git-completion.bash
+#
 # The contained completion routines provide support for completing:
 #
 #    *) local and remote branch names
