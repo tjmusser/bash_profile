@@ -2,6 +2,8 @@
 #
 # Copyright (C) 2006,2007 Shawn O. Pearce <spearce@spearce.org>
 # Distributed under the GNU General Public License, version 2.0.
+# 
+# https://github.com/git/git/blob/master/contrib/completion/git-prompt.sh
 #
 # This script allows you to see repository status in your prompt.
 #

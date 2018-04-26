@@ -45,7 +45,7 @@ alias .5='cd ../../../../..'
 alias killDS='find . -name *.DS_Store -type f -delete'
 
 ## Reload profile
-alias reload_profile='. ~/.bash_profile'
+alias reload_bash='. ~/.bash_profile'
 
 ## List everything
 alias ll='ls -al'
