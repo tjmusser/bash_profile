@@ -17,7 +17,7 @@ git config --global branch.autosetupmerge true
 
 # When pushing without giving a refspec, push the current branch to its upstream branch. 
 # See the git config man page for more possible options.
-git config --global push.default tracking
+git config --global push.default current
 
 # Enable the recording of resolved conflicts, so that identical hunks can be resolved automatically later on.
 git config --global rerere.enabled true
