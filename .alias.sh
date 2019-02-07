@@ -46,6 +46,7 @@ alias killDS='find . -name *.DS_Store -type f -delete'
 
 ## Reload profile
 alias reload_bash='. ~/.bash_profile'
+alias git_config='. ~/.git-config-setup.sh'
 
 ## List everything
 alias ll='ls -al'
