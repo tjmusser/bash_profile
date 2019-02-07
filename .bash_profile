@@ -9,6 +9,10 @@ if [ -f ~/.git-prompt.sh ]; then
   . ~/.git-prompt.sh
 fi
 
+if [ -f ~/.git-config-setup.sh ]; then
+  . ~/.git-config-setup.sh
+fi
+
 if [ -f ~/.alias.sh ]; then
   . ~/.alias.sh
 fi
