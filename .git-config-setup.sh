@@ -10,8 +10,7 @@ echo "Global git config settings"
 echo "--------------------------"
 echo -n "Set user.name and user.email for git config? (y/n) "
 read userConfig
-if [[ $userConfig =~ ^[Yy]$ ]]
-then
+if [[ $userConfig =~ ^[Yy]$ ]]; then
   # Ask for and set git username
   read -p 'git username: ' gitUsername
   git config --global user.name "$gitUsername"
@@ -20,13 +19,12 @@ then
   read -p 'git email: ' gitEmail
   git config --global user.email "$gitEmail"
   echo "$ADDED_TEXT User info to git config"
-  echo ""
+  echo
 fi
 
 echo -n "Set global config settings for git? (y/n) "
 read globalConfig
-if [[ $globalConfig =~ ^[Yy]$ ]]
-then
+if [[ $globalConfig =~ ^[Yy]$ ]]; then
   # Allow all Git commands to use colored output, if possible
   git config --global --replace-all color.ui auto
 

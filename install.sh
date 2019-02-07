@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 echo "Starting install of bash settings and git config"
-echo ""
+echo
 sleep 1
 # Copy files
 cp .alias.sh ~/
@@ -16,9 +16,8 @@ echo "[COPIED] settings files to root directory"
 # Copy all hooks from repo to system template
 echo -n "Install git hook templates? (y/n) "
 read installHooks
-echo ""
-if [[ $installHooks =~ ^[Yy]$ ]]
-then
+echo
+if [[ $installHooks =~ ^[Yy]$ ]]; then
   sleep 1
   # Create template hooks directory if missing
   if [ ! -d ~/.git-templates/hooks ]; then
@@ -32,13 +31,13 @@ then
   chmod a+x ~/.git-templates/hooks/pre-commit
   chmod a+x ~/.git-templates/hooks/pre-push
   echo "[ADDED] git hook templates"
-  echo ""
+  echo
   # Final step is to run `git init` on any exisiting local repos
   echo "------------------------------------------------------------------------------"
   echo "NOTE: To use the installed git hooks on an existing local repo, run 'git init'"
   echo "New and cloned repos will automatically have these hooks"
   echo "------------------------------------------------------------------------------"
-  echo ""
+  echo
   # New repos and cloned repos will have these hooks automatically
   # after installation
   sleep 2

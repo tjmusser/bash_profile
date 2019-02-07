@@ -1,50 +1,66 @@
-#!/bin/sh
+#!/bin/bash
 
-# Check to see if we are on master branch. Stop accidental commits
+echo "Running pre-commit checks..."
+echo
+
+# Check to see if we are on the master branch. Prevent accidental commits
 if [ $(git symbolic-ref HEAD 2>/dev/null) == "refs/heads/master" ]
 then
-  echo "Cannot commit to master branch"
+  echo "Cannot commit directly to the master branch"
   exit 1
 fi
-exit 0
 
+errorCheck=0
+continueMessage="Do you want to continue? (y/n) "
+abortMessage="Aborting commit..."
 
 # Redirect output to stderr.
 exec 1>&2
-# enable user input
-exec < /dev/tty
 
-# Check for console.log statements
-
-consoleregexp='console.log'
-# CHECK
-if test $(git diff --cached | grep $consoleregexp | wc -l) != 0
+# TS and JS Checks
+git diff --cached --name-only | while read FILE; do
+# We then pattern match the file name. If it ends in one of the listed extensions
+if [[ "$FILE" =~ ^.+(js|ts)$ ]]
 then
-  exec git diff --cached | grep -ne $consoleregexp
-  read -p "There are some occurrences of console.log at your modification. Are you sure want to continue? (y/n)" yn
-  echo $yn | grep ^[Yy]$
-  if [ $? -eq 0 ]
+  echo "Checking *.js and *.ts files"
+  # Check if file exists
+  if [[ -f $FILE ]]
   then
-    exit 0; #THE USER WANTS TO CONTINUE
-  else
-    exit 1; # THE USER DONT WANT TO CONTINUE SO ROLLBACK
+    consoleregexp='console.[[:alpha:]]*[(]'
+    debuggerregexp='debugger'
+
+    # Check for console statements
+    if test $(git diff --cached | grep $consoleregexp | wc -l) != 0
+    then
+      count=$(exec git diff --cached | grep -c $consoleregexp)
+      echo "$count console statement(s) found in your commit"
+      exec git diff --cached | grep -ne $consoleregexp
+      
+      echo
+      read -p "$continueMessage" ynConsole < /dev/tty
+      echo
+      if [[ $ynConsole =~ ^[Nn]$ ]]; then
+        echo $abortMessage; errorCheck=1; exit 1;        
+      fi
+    fi
+
+    # Check for debugger statements
+    if test $(git diff --cached | grep $debuggerregexp | wc -l) != 0
+    then
+      count=$(exec git diff --cached | grep -c $debuggerregexp)
+      echo "$count debugger statements found in your commit"
+      exec git diff --cached | grep -ne $debuggerregexp
+      read -p "$continueMessage" ynDebugger < /dev/tty
+      echo
+      if [[ $ynDebugger =~ ^[Nn]$ ]]; then
+        echo $abortMessage; errorCheck=1; exit 1;        
+      fi
+    fi
+
+    if [ $errorCheck -eq 0 ]; then
+      echo "Passed checks"
+    fi
+
   fi
 fi
-
-
-# Check for debugger statements
-
-consoleregexp='debugger'
-# CHECK
-if test $(git diff --cached | grep $consoleregexp | wc -l) != 0
-then
-  exec git diff --cached | grep -ne $consoleregexp
-  read -p "There are some occurrences of console.log at your modification. Are you sure want to continue? (y/n)" yn
-  echo $yn | grep ^[Yy]$
-  if [ $? -eq 0 ]
-  then
-    exit 0; #THE USER WANTS TO CONTINUE
-  else
-    exit 1; # THE USER DONT WANT TO CONTINUE SO ROLLBACK
-  fi
-fi
+done
