@@ -44,7 +44,16 @@ then
   sleep 2
 fi
 
-# Change to root to load new bash_profile
-cd ~
+if [ -f ~/.git-config-setup.sh ]; then
+  . ~/.git-config-setup.sh
+fi
 
+# Change to root to load new bash_profile
 . ~/.bash_profile
+
+echo "$ADDED_TEXT git-completion.bash"
+echo "$ADDED_TEXT git-prompt.sh"
+echo "$ADDED_TEXT aliases for terminal commands"
+echo "$ADDED_TEXT git aliases"
+echo "$ADDED_TEXT Terminal window styles"
+echo "Done!"
