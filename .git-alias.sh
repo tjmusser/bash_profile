@@ -46,7 +46,7 @@ git config --global --replace-all alias.undo 'reset HEAD~1 --mixed'
 git config --global --replace-all alias.amend 'commit -a --amend'
 
 # Returns the total lines of code in a codebase
-git config --global --replace-all alias.countfiles 'ls-files | xargs cat | wc -l'
+git config --global --replace-all alias.countfiles '!git ls-files | xargs cat | wc -l'
 
 # Terminal diff of all changes
 git config --global --replace-all alias.filelog 'log -u'
