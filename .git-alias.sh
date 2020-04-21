@@ -23,7 +23,7 @@ git config --global --replace-all alias.pfwl 'push --force-with-lease origin'
 git config --global --replace-all alias.syncdev '!git co develop && git fp && git ffm origin/develop'
 git config --global --replace-all alias.syncmaster '!git co master && git fp && git ffm origin/master'
 git config --global --replace-all alias.syncall '!git syncmaster && git syncdev'
-git config --global --replace-all alias.cleanbranches="!git co develop && git branch | grep -v "master\|develop" | xargs git branch -D"
+git config --global --replace-all alias.cleanbranches='!git co develop && git branch | grep -v "master\|develop" | xargs git branch -D'
 
 # This commits everything in your working directory and then does a hard reset to remove that commit.
 # The nice thing is, the commit is still there, but it’s just unreachable. Unreachable commits are a bit
