@@ -29,7 +29,7 @@ Once it's installed, new terminal windows will have this change.
 After installation, you can make changes or additions to these files to customize as needed. Once changes are made, your bash_profile needs to be updated. The profile can easily be reloaded with changes from any of these files with this command:
 
 ```
-reload_profile
+reload_bash
 ```
 
 ### Examples
