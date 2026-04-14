@@ -134,7 +134,7 @@ if [[ $sshSetup =~ ^[Yy]$ ]]; then
   if [[ $genNew =~ ^[Yy]$ ]]; then
     echo -n "Email to associate with SSH key: "
     read sshEmail
-    local key_path="$HOME/.ssh/id_ed25519"
+    key_path="$HOME/.ssh/id_ed25519"
     if [ -f "$key_path" ]; then
       echo -n "~/.ssh/id_ed25519 exists. Choose a name for the new key: "
       read key_name

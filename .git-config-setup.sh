@@ -73,7 +73,7 @@ read signingConfig
 if [[ $signingConfig =~ ^[Yy]$ ]]
 then
   # Look for existing SSH public keys
-  local ssh_keys=()
+  ssh_keys=()
   for keyfile in "$HOME"/.ssh/*.pub; do
     [ -f "$keyfile" ] && ssh_keys+=("$keyfile")
   done
@@ -85,7 +85,7 @@ then
   else
     echo ""
     echo "Available SSH public keys:"
-    local i=1
+    i=1
     for key in "${ssh_keys[@]}"; do
       echo "  $i) $key"
       i=$((i + 1))
@@ -95,7 +95,7 @@ then
     read keyChoice
 
     if [[ "$keyChoice" =~ ^[0-9]+$ ]] && [ "$keyChoice" -ge 1 ] && [ "$keyChoice" -le "${#ssh_keys[@]}" ]; then
-      local selected_key="${ssh_keys[$keyChoice]}"
+      selected_key="${ssh_keys[$keyChoice]}"
 
       git config --global --replace-all gpg.format ssh
       git config --global --replace-all user.signingkey "$selected_key"
