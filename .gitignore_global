@@ -1,0 +1,27 @@
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Editors
+.idea/
+.vscode/settings.json
+*.swp
+*.swo
+*~
+
+# Node
+node_modules/
+
+# Build artifacts
+dist/
+build/
+*.tgz

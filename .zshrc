@@ -24,3 +24,7 @@ fi
 if [ -f ~/.dev-tools.sh ]; then
   . ~/.dev-tools.sh
 fi
+
+if [ -f ~/.docker-aliases.sh ]; then
+  . ~/.docker-aliases.sh
+fi

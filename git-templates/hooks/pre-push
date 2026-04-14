@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# Prevents force pushes and deletions of protected branches (main and master).
+# Validates gitflow branch naming conventions (soft enforcement) and prevents
+# force pushes and deletions of protected branches (main and master).
 #
 # If this script exits with a non-zero status nothing will be pushed.
 #
@@ -23,6 +24,21 @@ do_exit(){
   exit 1
 }
 
+# Validate gitflow branch naming convention (soft enforcement -- warns but allows override)
+valid_pattern='^(feature|bugfix|release|hotfix|develop|main|master|HEAD)(/.*)?$'
+if ! echo "$current_branch" | grep -qE "$valid_pattern"; then
+  echo "------------------------------------------------------------------------------"
+  echo "[Policy] Branch '$current_branch' does not follow naming conventions."
+  echo "Expected: feature/*, bugfix/*, release/*, hotfix/*, develop, or main"
+  echo "------------------------------------------------------------------------------"
+  echo -n "Push anyway? (y/n) "
+  read response < /dev/tty
+  if ! echo "$response" | grep -q '^[Yy]$'; then
+    exit 1
+  fi
+fi
+
+# Hard-block force pushes and deletions of protected branches
 for protected_branch in main master; do
   will_remove_protected=":$protected_branch"
 

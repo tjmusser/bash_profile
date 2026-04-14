@@ -25,6 +25,8 @@ config_files=(
   ".git-config-setup.sh"
   ".node-settings.sh"
   ".dev-tools.sh"
+  ".docker-aliases.sh"
+  ".gitignore_global"
 )
 
 # Check for existing .zshrc that isn't already our symlink
@@ -104,6 +106,74 @@ if [ -f "$REPO_DIR/.git-alias.sh" ]; then
   echo "$ADDED_TEXT git aliases to global config"
 fi
 
+# SSH key setup
+echo ""
+echo -n "Set up SSH key for GitHub? (y/n) "
+read sshSetup
+echo ""
+if [[ $sshSetup =~ ^[Yy]$ ]]; then
+  # Check for existing keys
+  existing_keys=()
+  for keyfile in "$HOME"/.ssh/*.pub; do
+    [ -f "$keyfile" ] && existing_keys+=("$keyfile")
+  done
+
+  if [ ${#existing_keys[@]} -gt 0 ]; then
+    echo "Existing SSH keys found:"
+    for key in "${existing_keys[@]}"; do
+      echo "  $key"
+    done
+    echo ""
+    echo -n "Generate a new key anyway? (y/n) "
+    read genNew
+    echo ""
+  else
+    genNew="y"
+  fi
+
+  if [[ $genNew =~ ^[Yy]$ ]]; then
+    echo -n "Email to associate with SSH key: "
+    read sshEmail
+    local key_path="$HOME/.ssh/id_ed25519"
+    if [ -f "$key_path" ]; then
+      echo -n "~/.ssh/id_ed25519 exists. Choose a name for the new key: "
+      read key_name
+      key_path="$HOME/.ssh/$key_name"
+    fi
+    ssh-keygen -t ed25519 -C "$sshEmail" -f "$key_path"
+    echo "$ADDED_TEXT SSH key generated at $key_path"
+  else
+    key_path="${existing_keys[1]%.*}"
+  fi
+
+  # Ensure ssh-agent config for macOS Keychain
+  ssh_config="$HOME/.ssh/config"
+  if ! grep -q 'AddKeysToAgent' "$ssh_config" 2>/dev/null; then
+    mkdir -p "$HOME/.ssh"
+    cat >> "$ssh_config" <<EOF
+
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ${key_path}
+EOF
+    chmod 600 "$ssh_config"
+    echo "$ADDED_TEXT SSH agent config to ~/.ssh/config"
+  fi
+
+  # Add key to agent and Keychain
+  ssh-add --apple-use-keychain "${key_path}" 2>/dev/null || ssh-add "${key_path}"
+
+  echo ""
+  echo "$DIVIDER"
+  echo "Copy the public key below and add it to GitHub:"
+  echo "  https://github.com/settings/ssh -> New SSH key"
+  echo "$DIVIDER"
+  echo ""
+  cat "${key_path}.pub"
+  echo ""
+fi
+
 # Load the new profile into current terminal
 echo ""
 . "$HOME/.zshrc"
@@ -115,6 +185,8 @@ echo "$ADDED_TEXT git aliases (global config)"
 echo "$ADDED_TEXT terminal prompt styles"
 echo "$ADDED_TEXT Node.js/NVM settings with auto-switch"
 echo "$ADDED_TEXT development tool aliases"
+echo "$ADDED_TEXT docker aliases"
+echo "$ADDED_TEXT global gitignore"
 echo "[LOADED] zsh profile to current terminal"
 echo ""
 echo "Ready to use!"

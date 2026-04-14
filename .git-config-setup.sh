@@ -61,5 +61,56 @@ then
   # Better conflict markers showing base, ours, and theirs
   git config --global --replace-all merge.conflictstyle zdiff3
 
+  # Global gitignore file
+  git config --global --replace-all core.excludesfile '~/.gitignore_global'
+
   echo "$ADDED_TEXT git config global settings"
+fi
+
+echo ""
+echo -n "Enable SSH commit signing? (y/n) "
+read signingConfig
+if [[ $signingConfig =~ ^[Yy]$ ]]
+then
+  # Look for existing SSH public keys
+  local ssh_keys=()
+  for keyfile in "$HOME"/.ssh/*.pub; do
+    [ -f "$keyfile" ] && ssh_keys+=("$keyfile")
+  done
+
+  if [ ${#ssh_keys[@]} -eq 0 ]; then
+    echo "No SSH public keys found in ~/.ssh/"
+    echo "Run the SSH key setup step in install.sh first, or generate one with:"
+    echo "  ssh-keygen -t ed25519"
+  else
+    echo ""
+    echo "Available SSH public keys:"
+    local i=1
+    for key in "${ssh_keys[@]}"; do
+      echo "  $i) $key"
+      i=$((i + 1))
+    done
+    echo ""
+    echo -n "Select key number to use for signing (1-${#ssh_keys[@]}): "
+    read keyChoice
+
+    if [[ "$keyChoice" =~ ^[0-9]+$ ]] && [ "$keyChoice" -ge 1 ] && [ "$keyChoice" -le "${#ssh_keys[@]}" ]; then
+      local selected_key="${ssh_keys[$keyChoice]}"
+
+      git config --global --replace-all gpg.format ssh
+      git config --global --replace-all user.signingkey "$selected_key"
+      git config --global --replace-all commit.gpgsign true
+      git config --global --replace-all tag.gpgsign true
+
+      echo "$ADDED_TEXT SSH commit signing with $selected_key"
+      echo ""
+      echo "Add your public key to GitHub at:"
+      echo "  https://github.com/settings/ssh"
+      echo "  -> New SSH key -> Key type: Signing Key"
+      echo ""
+      cat "$selected_key"
+    else
+      echo "Invalid selection. Skipping SSH signing setup."
+    fi
+  fi
 fi

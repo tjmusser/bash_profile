@@ -28,6 +28,17 @@ alias syncmain='git co main && gf && gffm origin/main'
 alias syncdev='git co develop && gf && gffm origin/develop'
 alias syncall='syncmain && syncdev'
 
+## Gitflow branch shortcuts
+alias gff='git checkout -b feature/'
+alias gfb='git checkout -b bugfix/'
+alias gfr='git checkout -b release/'
+alias gfh='git checkout -b hotfix/'
+
+## Cleanup
+alias nuke_modules='find . -name "node_modules" -type d -prune -exec rm -rf {} +'
+alias nuke_dist='find . -name "dist" -type d -prune -exec rm -rf {} +'
+alias cleanup='gcleanbr && git fetch -p origin'
+
 ## get rid of command not found
 alias cd..='cd ..'
 

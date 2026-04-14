@@ -25,6 +25,17 @@ git config --global --replace-all alias.syncmain '!git co main && git fp && git 
 git config --global --replace-all alias.syncall '!git syncmain && git syncdev'
 git config --global --replace-all alias.cleanbranches '!git co develop && git branch | grep -v "main\|develop" | xargs git branch -D'
 
+# Gitflow branch shortcuts
+git config --global --replace-all alias.feature 'checkout -b feature/'
+git config --global --replace-all alias.bugfix 'checkout -b bugfix/'
+git config --global --replace-all alias.release 'checkout -b release/'
+git config --global --replace-all alias.hotfix 'checkout -b hotfix/'
+
+# Git worktree shortcuts
+git config --global --replace-all alias.wta 'worktree add'
+git config --global --replace-all alias.wtl 'worktree list'
+git config --global --replace-all alias.wtr 'worktree remove'
+
 # Commits everything then does a hard reset to remove that commit.
 # The commit is still there but unreachable. Use git reflog to find it if needed.
 git config --global --replace-all alias.wipe '!git add -A && git commit -qm "WIPE SAVEPOINT" && git reset HEAD~1 --hard'

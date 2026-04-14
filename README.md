@@ -8,11 +8,16 @@ Files are **symlinked** to your home directory, so pulling changes in this repo 
 
 - **Git prompt** - Shows branch name in your prompt. Green `(branch)` for clean repos, red `{branch}` for dirty repos
 - **Git aliases** - Shortcuts for common git tasks (`git co`, `git ci`, `git hist`, `syncmain`, etc.)
-- **Git config** - Sensible defaults: rebase on pull, auto-prune, ff-only merges, rerere
-- **Git hooks** - Pre-commit hook warns on commits to main/master and catches `console.log`/`debugger`. Pre-push hook prevents force pushes to protected branches
-- **Shell aliases** - Directory navigation, reload, cleanup shortcuts
-- **Node.js/NVM** - NVM initialization with automatic `nvm use` when entering a directory with `.nvmrc`
+- **Git config** - Sensible defaults: rebase on pull, auto-prune, ff-only merges, rerere, SSH commit signing
+- **Git hooks** - Pre-commit catches `console.log`/`debugger` and warns on commits to protected branches. Pre-push prevents force pushes and validates gitflow branch naming
+- **Gitflow shortcuts** - Branch creation aliases for feature, bugfix, release, and hotfix branches
+- **Shell aliases** - Navigation, cleanup (`nuke_modules`, `nuke_dist`), reload shortcuts
+- **Node.js/NVM** - NVM initialization with automatic `nvm use` when entering a directory with `.nvmrc` or `.node-version`
+- **npm/pnpm** - Aliases for both package managers
+- **Docker** - Container and Docker Compose aliases (only active when Docker is installed)
 - **Dev tools** - Claude Code and jcodeMunch aliases
+- **Global gitignore** - Excludes `.env`, `.DS_Store`, `node_modules`, and common editor files globally
+- **SSH setup** - Interactive SSH key generation and macOS Keychain integration
 
 ## Installation
 
@@ -29,8 +34,9 @@ The installer will:
 1. Back up any existing config files (e.g. `~/.zshrc.backup.2026-04-14`)
 2. Symlink config files from this repo to your home directory
 3. Optionally install git hook templates
-4. Walk you through git config setup (username, email, global settings)
+4. Walk you through git config setup (username, email, global settings, SSH signing)
 5. Set up git aliases in your global git config
+6. Optionally generate an SSH key and configure macOS Keychain
 
 ## Making Changes
 
@@ -69,6 +75,28 @@ syncdev   = git checkout develop && git fetch -p origin && git merge --ff-only o
 syncall   = syncmain && syncdev
 ```
 
+### Gitflow Branch Shortcuts
+
+Create branches following gitflow naming conventions:
+
+| Alias | Creates branch |
+|-------|----------------|
+| `gff my-feature` | `feature/my-feature` |
+| `gfb my-fix` | `bugfix/my-fix` |
+| `gfr 1.2.0` | `release/1.2.0` |
+| `gfh critical-fix` | `hotfix/critical-fix` |
+
+Also available as git aliases: `git feature`, `git bugfix`, `git release`, `git hotfix`
+
+### Cleanup
+
+| Alias | What it does |
+|-------|-------------|
+| `nuke_modules` | Recursively delete all `node_modules` directories from cwd |
+| `nuke_dist` | Recursively delete all `dist` directories from cwd |
+| `cleanup` | Delete merged branches + prune stale remote refs |
+| `killDS` | Recursively delete `.DS_Store` files |
+
 ### Git Aliases (via git config)
 
 | Alias | Description |
@@ -76,6 +104,13 @@ syncall   = syncmain && syncdev
 | `git co` | checkout |
 | `git ci` | commit --verbose |
 | `git cob` | checkout -b |
+| `git feature` | checkout -b feature/ |
+| `git bugfix` | checkout -b bugfix/ |
+| `git release` | checkout -b release/ |
+| `git hotfix` | checkout -b hotfix/ |
+| `git wta` | worktree add |
+| `git wtl` | worktree list |
+| `git wtr` | worktree remove |
 | `git hist` | Pretty log with graph |
 | `git save` | Add all + commit "SAVEPOINT" |
 | `git wip` | Commit tracked changes as "WIP" |
@@ -95,6 +130,35 @@ syncall   = syncmain && syncdev
 | `nrb` | `npm run build` |
 | `nrt` | `npm run test` |
 
+### pnpm Aliases
+
+| Alias | Command |
+|-------|---------|
+| `pi` | `pnpm install` |
+| `pr` | `pnpm run` |
+| `prd` | `pnpm run dev` |
+| `prb` | `pnpm run build` |
+| `prt` | `pnpm run test` |
+| `pa` | `pnpm add` |
+| `pad` | `pnpm add -D` |
+
+### Docker Aliases
+
+Active only when Docker is installed.
+
+| Alias | Command |
+|-------|---------|
+| `dps` | `docker ps` |
+| `dpsa` | `docker ps -a` |
+| `dimg` | `docker images` |
+| `dprune` | `docker system prune -af` |
+| `dlog` | `docker logs -f` |
+| `dcu` | `docker compose up -d` |
+| `dcd` | `docker compose down` |
+| `dcr` | `docker compose restart` |
+| `dcl` | `docker compose logs -f` |
+| `dcb` | `docker compose build` |
+
 ### Dev Tool Aliases
 
 | Alias | Command |
@@ -113,7 +177,6 @@ syncall   = syncmain && syncdev
 | `....` | `cd ../../..` |
 | `.2`-`.5` | cd up 2-5 directories |
 | `ll` | `ls -al` |
-| `killDS` | Recursively delete .DS_Store files |
 
 ## File Structure
 
@@ -121,11 +184,14 @@ syncall   = syncmain && syncdev
 |------|---------|
 | `.zshrc` | Main entry point, sources all other files |
 | `.zsh-settings.sh` | Prompt configuration with git integration |
-| `.alias.sh` | Shell and git shortcut aliases |
+| `.alias.sh` | Shell, git, gitflow, and cleanup aliases |
 | `.git-alias.sh` | Git config aliases (run once during install) |
-| `.git-config-setup.sh` | Interactive git config setup |
+| `.git-config-setup.sh` | Interactive git config and SSH signing setup |
 | `.git-prompt.sh` | Git prompt support (upstream script) |
-| `.node-settings.sh` | NVM init, auto-switch, npm aliases |
+| `.node-settings.sh` | NVM init, auto-switch (`.nvmrc`/`.node-version`), npm and pnpm aliases |
+| `.docker-aliases.sh` | Docker and Docker Compose aliases |
 | `.dev-tools.sh` | Claude Code, jcodeMunch aliases |
-| `git-templates/hooks/` | Pre-commit and pre-push hook templates |
+| `.gitignore_global` | Global gitignore for secrets, macOS, editor, and build files |
+| `git-templates/hooks/pre-commit` | Warns on commits to protected branches, catches console.log/debugger |
+| `git-templates/hooks/pre-push` | Validates gitflow branch naming, blocks force pushes to main/master |
 | `install.sh` | Installation script |
