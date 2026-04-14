@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/zsh
 #
-# Aliases to use within git
+# Git aliases set via git config (run once during install, not on every shell startup)
 
 git config --global --replace-all alias.co checkout
 git config --global --replace-all alias.ci '!git commit --verbose'
@@ -12,8 +12,8 @@ git config --global --replace-all alias.type 'cat-file -t'
 git config --global --replace-all alias.dump 'cat-file -p'
 git config --global --replace-all alias.last 'log -1 HEAD'
 
-# ff merge or pull --rebase is better than standard merge when updating master or develop branches
-# No accidental or unnecessary merge commits. Avoid stupid git mistakes
+# ff merge or pull --rebase is better than standard merge when updating main or develop branches
+# No accidental or unnecessary merge commits
 git config --global --replace-all alias.fp '!git fetch -p origin'
 git config --global --replace-all alias.ffm 'merge --ff-only'
 git config --global --replace-all alias.cob 'checkout -b'
@@ -21,15 +21,12 @@ git config --global --replace-all alias.la '!git config -l | grep alias | cut -c
 git config --global --replace-all alias.ac '!git add . && git commit --verbose'
 git config --global --replace-all alias.pfwl 'push --force-with-lease origin'
 git config --global --replace-all alias.syncdev '!git co develop && git fp && git ffm origin/develop'
-git config --global --replace-all alias.syncmaster '!git co master && git fp && git ffm origin/master'
-git config --global --replace-all alias.syncall '!git syncmaster && git syncdev'
-git config --global --replace-all alias.cleanbranches '!git co develop && git branch | grep -v "master\|develop" | xargs git branch -D'
+git config --global --replace-all alias.syncmain '!git co main && git fp && git ffm origin/main'
+git config --global --replace-all alias.syncall '!git syncmain && git syncdev'
+git config --global --replace-all alias.cleanbranches '!git co develop && git branch | grep -v "main\|develop" | xargs git branch -D'
 
-# This commits everything in your working directory and then does a hard reset to remove that commit.
-# The nice thing is, the commit is still there, but it’s just unreachable. Unreachable commits are a bit
-# inconvenient to restore, but at least they are still there. You can run the git reflog command and find
-# the SHA of the commit if you realize later that you made a mistake with the reset. The commit message will
-# be “WIPE SAVEPOINT” in this case.
+# Commits everything then does a hard reset to remove that commit.
+# The commit is still there but unreachable. Use git reflog to find it if needed.
 git config --global --replace-all alias.wipe '!git add -A && git commit -qm "WIPE SAVEPOINT" && git reset HEAD~1 --hard'
 
 # Adds all changes including untracked files and creates a commit
@@ -38,8 +35,7 @@ git config --global --replace-all alias.save '!git add -A && git commit -m "SAVE
 # Only commits tracked changes
 git config --global --replace-all alias.wip 'commit -am "WIP"'
 
-# Resets the previous commit, but keeps all the changes from that commit in the working directory.
-# Slap people in the face that use `git reset HEAD --hard`. It’s a bad idea. Don’t do it!
+# Resets the previous commit, but keeps all changes in the working directory
 git config --global --replace-all alias.undo 'reset HEAD~1 --mixed'
 
 # Amends current changes to previous commit

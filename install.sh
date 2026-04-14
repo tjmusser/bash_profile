@@ -1,79 +1,124 @@
-#!/bin/bash
+#!/bin/zsh
 #
-LINES="------------------------------------------------------------------------------"
+DIVIDER="------------------------------------------------------------------------------"
+REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+BACKUP_SUFFIX=".backup.$(date +%Y-%m-%d)"
+ADDED_TEXT="[ADDED]"
 
-# Begin install
-echo "Starting install of global bash settings and global git config"
+echo ""
+echo "Terminal Profile Installer"
+echo "=========================="
+echo ""
+echo "This will set up your zsh profile with git integration,"
+echo "aliases, and development tools."
+echo ""
+echo "Config files will be symlinked from this repo:"
+echo "  $REPO_DIR"
 echo ""
 
-if test -f ~/.bash_profile; then
-  echo $LINES
-  echo "WARNING: This will overwrite the exisiting bash_profile file you might have created."
-  echo $LINES
+# Files to symlink to home directory
+config_files=(
+  ".zshrc"
+  ".zsh-settings.sh"
+  ".alias.sh"
+  ".git-prompt.sh"
+  ".git-config-setup.sh"
+  ".node-settings.sh"
+  ".dev-tools.sh"
+)
+
+# Check for existing .zshrc that isn't already our symlink
+if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
+  echo "$DIVIDER"
+  echo "WARNING: This will replace your existing ~/.zshrc file."
+  echo "A backup will be saved to ~/.zshrc${BACKUP_SUFFIX}"
+  echo "$DIVIDER"
   echo ""
-  read -p "Would you like to proceed? (y/n)" shouldWeProceed
-  echo $shouldWeProceed | grep ^[Yy]$
-  if [ $? -eq 0 ]
-  then
-    exit 0; #THE USER WANTS TO CONTINUE
-  else
-    exit 1; # THE USER DONT WANT TO CONTINUE SO ROLLBACK
+  echo -n "Would you like to proceed? (y/n) "
+  read shouldWeProceed
+  if ! echo "$shouldWeProceed" | grep -q '^[Yy]$'; then
+    echo "Installation cancelled."
+    exit 1
+  fi
+  echo ""
+fi
+
+# Back up and symlink each config file
+for file in "${config_files[@]}"; do
+  target="$HOME/$file"
+  source="$REPO_DIR/$file"
+
+  if [ -f "$target" ] && [ ! -L "$target" ]; then
+    cp "$target" "${target}${BACKUP_SUFFIX}"
+    echo "[BACKUP] ~/$file -> ~/${file}${BACKUP_SUFFIX}"
+  fi
+
+  ln -sf "$source" "$target"
+  echo "[LINKED] ~/$file"
+done
+
+echo ""
+
+# Ensure .zprofile has Homebrew init (Apple Silicon macs)
+if [ -f /opt/homebrew/bin/brew ]; then
+  if ! grep -q 'brew shellenv' "$HOME/.zprofile" 2>/dev/null; then
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
+    echo "$ADDED_TEXT Homebrew initialization to .zprofile"
   fi
 fi
 
-sleep 1
-# Copy files
-cp .alias.sh ~/
-cp .bash-settings.sh ~/
-cp .bash_profile ~/
-cp .git-alias.sh ~/
-cp .git-completion.bash ~/
-cp .git-config-setup.sh ~/
-cp .git-prompt.sh ~/
-echo "[COPIED] git settings and bash files to user directory"
-
-# Copy all hooks from repo to system template
+# Install git hook templates
+echo ""
 echo -n "Install templates for git hooks? (y/n) "
 read installHooks
 echo ""
-if [[ $installHooks =~ ^[Yy]$ ]]
-then
-  sleep 1
-  # Create template hooks directory if missing
-  if [ ! -d ~/.git-templates/hooks ]; then
-    mkdir -p ~/.git-templates/hooks
+if [[ $installHooks =~ ^[Yy]$ ]]; then
+  if [ ! -d "$HOME/.git-templates/hooks" ]; then
+    mkdir -p "$HOME/.git-templates/hooks"
     echo "[CREATED] directory for storing git hooks"
   fi
 
-  cp ./git-templates/hooks/* ~/.git-templates/hooks
+  for hook in "$REPO_DIR"/git-templates/hooks/*; do
+    hookname=$(basename "$hook")
+    ln -sf "$hook" "$HOME/.git-templates/hooks/$hookname"
+    chmod a+x "$HOME/.git-templates/hooks/$hookname"
+    echo "[LINKED] git hook: $hookname"
+  done
 
-  # git hooks need to be executable
-  chmod a+x ~/.git-templates/hooks/pre-commit
-  chmod a+x ~/.git-templates/hooks/pre-push
-  echo "[ADDED] git hook templates"
   echo ""
-  # Final step is to run `git init` on any exisiting local repos
-  echo $LINES
+  echo "$DIVIDER"
   echo "NOTE: To use the installed git hooks on an existing local repo, run 'git init'"
   echo "New and cloned repos will automatically have these hooks"
-  echo $LINES
+  echo "$DIVIDER"
   echo ""
-  # New repos and cloned repos will have these hooks automatically
-  # after installation
-  sleep 2
 fi
 
-if test -f ~/.git-config-setup.sh; then
-  . ~/.git-config-setup.sh
+# Run git config setup (interactive, one-time)
+if [ -f "$REPO_DIR/.git-config-setup.sh" ]; then
+  . "$REPO_DIR/.git-config-setup.sh"
 fi
 
-# Change to root to load new bash_profile
-. ~/.bash_profile
+# Run git alias setup (one-time, not on every shell startup)
+if [ -f "$REPO_DIR/.git-alias.sh" ]; then
+  . "$REPO_DIR/.git-alias.sh"
+  echo "$ADDED_TEXT git aliases to global config"
+fi
 
-echo "$ADDED_TEXT git-completion.bash"
+# Load the new profile into current terminal
+echo ""
+. "$HOME/.zshrc"
+
+echo ""
 echo "$ADDED_TEXT git-prompt.sh"
 echo "$ADDED_TEXT aliases for terminal commands"
-echo "$ADDED_TEXT git aliases"
-echo "$ADDED_TEXT Terminal window styles"
-echo "[LOADED] bash file to current terminal."
+echo "$ADDED_TEXT git aliases (global config)"
+echo "$ADDED_TEXT terminal prompt styles"
+echo "$ADDED_TEXT Node.js/NVM settings with auto-switch"
+echo "$ADDED_TEXT development tool aliases"
+echo "[LOADED] zsh profile to current terminal"
+echo ""
 echo "Ready to use!"
+echo ""
+echo "Since files are symlinked, changes to this repo are"
+echo "immediately active in new terminal windows."
+echo "Run 'reload' to refresh the current terminal."

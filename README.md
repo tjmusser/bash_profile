@@ -1,67 +1,131 @@
-# Customize Your Terminal bash_profile
-This script allows for easy customization your mac OSX terminal's bash profile. It installs commonly needed tools like git auto-complete, git templates, and an easy format for customizing the git prompt. And any changes you make can easily be refreshed.
+# Terminal Profile
 
-All this stuff is already out there, this just puts all the pieces together in a nice, fast, easy-to-use package. You should review these before installing and make any necessary changes as this will permanently change your bash profile
+Modular zsh configuration for macOS. Manages git integration, shell aliases, Node.js/NVM settings, and development tool shortcuts across machines.
 
-This shell script installs these components:
-* git-completion for auto completion
-* git-prompt for coloring and customization of git in terminal
-* git templates for pre-commit and pre-push hooks (Learn to use them, love them)
-* [System aliases](https://github.com/tjmusser/bash_profile/blob/master/.alias.sh) for mac
-* [Git aliases](https://github.com/tjmusser/bash_profile/blob/master/.git-alias.sh) for different git tasks
-* Customized $PS1 for git using git-prompt
-* Git config initial setup (House keeping stuff)
+Files are **symlinked** to your home directory, so pulling changes in this repo immediately updates your live config.
 
+## What's Included
 
-### Installation
-This will install all of these settings and aliases globally for your git prompt along with your mac and git aliases.
+- **Git prompt** - Shows branch name in your prompt. Green `(branch)` for clean repos, red `{branch}` for dirty repos
+- **Git aliases** - Shortcuts for common git tasks (`git co`, `git ci`, `git hist`, `syncmain`, etc.)
+- **Git config** - Sensible defaults: rebase on pull, auto-prune, ff-only merges, rerere
+- **Git hooks** - Pre-commit hook warns on commits to main/master and catches `console.log`/`debugger`. Pre-push hook prevents force pushes to protected branches
+- **Shell aliases** - Directory navigation, reload, cleanup shortcuts
+- **Node.js/NVM** - NVM initialization with automatic `nvm use` when entering a directory with `.nvmrc`
+- **Dev tools** - Claude Code and jcodeMunch aliases
 
-Clone the repo in terminal and run these commands:
+## Installation
+
+Clone the repo and run the installer:
+
 ```
-cd bash_profile
+git clone <repo-url> ~/bash_profile
+cd ~/bash_profile
 chmod +x install.sh
 ./install.sh
 ```
 
-Once it's installed, new terminal windows will have this change.
+The installer will:
+1. Back up any existing config files (e.g. `~/.zshrc.backup.2026-04-14`)
+2. Symlink config files from this repo to your home directory
+3. Optionally install git hook templates
+4. Walk you through git config setup (username, email, global settings)
+5. Set up git aliases in your global git config
 
-### Making Changes
-After installation, you can make changes or additions to these files to customize as needed. Once changes are made, your bash_profile needs to be updated. The profile can easily be reloaded with changes from any of these files with this command:
+## Making Changes
+
+Since files are symlinked, edit them directly in this repo. Changes are live in new terminal windows immediately.
+
+To refresh the current terminal session:
 
 ```
-reload_bash
+reload
 ```
 
-### Examples
-These are just some of the git aliases in this script. [View the .git-alias.sh](https://github.com/tjmusser/bash_profile/blob/master/.git-alias.sh) file to see all of them.
+## Shell Aliases
 
-Oh and slap people in the face that use `git reset HEAD --hard`. It’s a bad idea. Don’t do it!
+### Git Shortcuts
 
-**Check out**
+| Alias | Command |
+|-------|---------|
+| `gs` | `git status` |
+| `ga` | `git add` |
+| `gb` | `git branch` |
+| `gc` | `git commit --verbose` |
+| `gd` | `git diff` |
+| `go` | `git checkout` |
+| `gri` | `git rebase -i` |
+| `gf` | `git fetch -p origin` |
+| `gpr` | `git pull --rebase` |
+| `gpmain` | `git push origin main` |
+
+### Sync Branches (Gitflow)
+
+Fast-forward merge your local main and develop branches with origin:
+
 ```
-git co feature/branch-name = git checkout feature/branch-name
-git cob bugfix/branch-name = git checkout -b bugfix/branch-name
-```
-
-**Sync Master and Develop branches on your local**
-
-This will update your local master and develop branches with the most recent changes from your origin repo. This will do a fetch from the origin, prune dead branches, and then do a fast-forward merge.
-
-This creates a linear history and avoids a merge commit on these branches as we shouldn't be committing to master or develop directly. All we want to do is update our local branches without adding commits.
-```
-syncmaster == git checkout master && git fetch -p origin && git merge --ff-only origin/master
-syncdev == git checkout develop && git fetch -p origin && git merge --ff-only origin/develop
-syncall == syncmaster && syncdev
-```
-
-**Git History**
-
-Displays a nicer, color coded, view of the git log. You can view the hole thing or set a flag `-X` for how many commits you want to view.
-```
-git hist -3 = log --format=format:'%C(bold yellow)%h%C(reset) %C(blue)(%ar)%C(reset) - %C(white)%s%C(reset) %C(dim white)[%an]%C(reset)%C(dim yellow)%d%C(reset)' --graph --decorate
+syncmain  = git checkout main && git fetch -p origin && git merge --ff-only origin/main
+syncdev   = git checkout develop && git fetch -p origin && git merge --ff-only origin/develop
+syncall   = syncmain && syncdev
 ```
 
-**Amend changes to your previous commit**
-```
-git amend = git commit -a --amend
-```
+### Git Aliases (via git config)
+
+| Alias | Description |
+|-------|-------------|
+| `git co` | checkout |
+| `git ci` | commit --verbose |
+| `git cob` | checkout -b |
+| `git hist` | Pretty log with graph |
+| `git save` | Add all + commit "SAVEPOINT" |
+| `git wip` | Commit tracked changes as "WIP" |
+| `git undo` | Soft reset last commit |
+| `git amend` | Amend last commit |
+| `git wipe` | Savepoint + hard reset (recoverable via reflog) |
+| `git pfwl` | Push --force-with-lease |
+| `git la` | List all aliases |
+
+### npm Aliases
+
+| Alias | Command |
+|-------|---------|
+| `ni` | `npm install` |
+| `nr` | `npm run` |
+| `nrd` | `npm run dev` |
+| `nrb` | `npm run build` |
+| `nrt` | `npm run test` |
+
+### Dev Tool Aliases
+
+| Alias | Command |
+|-------|---------|
+| `cc` | `claude` |
+| `ccc` | `claude --continue` |
+| `ccr` | `claude --resume` |
+| `jcm` | `jcodemunch` |
+
+### Navigation
+
+| Alias | Command |
+|-------|---------|
+| `..` | `cd ..` |
+| `...` | `cd ../..` |
+| `....` | `cd ../../..` |
+| `.2`-`.5` | cd up 2-5 directories |
+| `ll` | `ls -al` |
+| `killDS` | Recursively delete .DS_Store files |
+
+## File Structure
+
+| File | Purpose |
+|------|---------|
+| `.zshrc` | Main entry point, sources all other files |
+| `.zsh-settings.sh` | Prompt configuration with git integration |
+| `.alias.sh` | Shell and git shortcut aliases |
+| `.git-alias.sh` | Git config aliases (run once during install) |
+| `.git-config-setup.sh` | Interactive git config setup |
+| `.git-prompt.sh` | Git prompt support (upstream script) |
+| `.node-settings.sh` | NVM init, auto-switch, npm aliases |
+| `.dev-tools.sh` | Claude Code, jcodeMunch aliases |
+| `git-templates/hooks/` | Pre-commit and pre-push hook templates |
+| `install.sh` | Installation script |
